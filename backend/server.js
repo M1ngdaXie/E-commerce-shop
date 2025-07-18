@@ -4,6 +4,7 @@ import express from "express";
 import connectDB from "./lib/db.js";
 import redisClient from "./lib/redis.js";
 import authRoutes from "./routes/auth.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 import productRoutes from "./routes/product.routes.js";
 const app = express();
 dotenv.config();
@@ -12,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-
+app.use("/api/cart", cartRoutes);
 // Test Redis connection on startup
 async function testRedis() {
   try {
