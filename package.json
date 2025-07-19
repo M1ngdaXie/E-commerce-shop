@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon backend/server.js",
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "frontend": "cd frontend/ecommerceshop && npm run dev",
+    "dev:frontend": "cd frontend/ecommerceshop && npm run dev",
+    "dev:backend": "nodemon backend/server.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +27,9 @@
     "stripe": "^18.3.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "autoprefixer": "^10.4.21",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   }
 }
