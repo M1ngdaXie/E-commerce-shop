@@ -9,6 +9,7 @@ import cartRoutes from "./routes/cart.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import paymentRoutes from "./routes/payment.route.js";
 import productRoutes from "./routes/product.routes.js";
+
 const app = express();
 dotenv.config();
 

@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { Loader, Lock, Mail, User, UserPlus } from "lucide-react";
+import { ArrowRight, Loader, Lock, Mail, User, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import useUserStore from "../stores/useUserStore.js";
 
 const SignUpPage = () => {
-  const [loading, setLoading] = useState(false);
+  const { signup, loading } = useUserStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,11 +15,13 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      console.log(formData);
-    }, 1500);
+    console.log("Submitting form with data:", formData);
+    signup(
+      formData.name,
+      formData.email,
+      formData.password,
+      formData.confirmPassword
+    );
   };
 
   return (
@@ -188,6 +192,15 @@ const SignUpPage = () => {
           </motion.button>
         </motion.form>
         <div className="px-8 pb-8">
+          <p className="mt-8 text-center text-sm text-gray-400">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-emerald-400 hover:text-emerald-300"
+            >
+              Login here <ArrowRight className="inline h-4 w-4" />
+            </Link>
+          </p>
           <p className="text-center text-xs text-emerald-100/80 pt-4 opacity-90">
             By signing up, you agree to our{" "}
             <span className="underline decoration-cyan-300 underline-offset-2 cursor-pointer hover:text-emerald-200 transition">
