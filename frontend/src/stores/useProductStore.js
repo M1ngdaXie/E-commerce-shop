@@ -75,5 +75,14 @@ const useProductStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+  fetchProductsByCategory: async (category) => {
+    set({ loading: true, products: [] }); // Clear previous products
+    try {
+      const response = await axios.get(`/products/category/${category}`);
+      set({ products: response.data.products, loading: false });
+    } catch (error) {
+      set({ loading: false, products: [] }); // Ensure empty array on failure
+    }
+  },
 }));
 export default useProductStore;

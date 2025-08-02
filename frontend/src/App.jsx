@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import Navbar from "./components/Navbar.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import CategoryPage from "./pages/CategoryPage.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
@@ -45,6 +46,7 @@ function App() {
                 )
               }
             />
+            <Route path="/category/:category" element={<CategoryPage />} />
             {/* <Route path="*" element={<Navigate to="/" />} /> */}
           </Route>
         </Routes>
