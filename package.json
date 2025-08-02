@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon backend/server.js",
     "start": "node backend/server.js",
-    "frontend": "cd frontend/ecommerceshop && npm run dev",
-    "dev:frontend": "cd frontend/ecommerceshop && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "dev:frontend": "cd frontend/e-commerce-shop && npm run dev",
     "dev:backend": "nodemon backend/server.js"
   },
   "keywords": [],

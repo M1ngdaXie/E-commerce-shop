@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import Navbar from "./components/Navbar.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
@@ -34,6 +35,17 @@ function App() {
               path="/login"
               element={!user ? <LoginPage /> : <Navigate to="/" />}
             />
+            <Route
+              path="/dashboard"
+              element={
+                user?.role === "admin" ? (
+                  <AdminPage />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            {/* <Route path="*" element={<Navigate to="/" />} /> */}
           </Route>
         </Routes>
       </div>

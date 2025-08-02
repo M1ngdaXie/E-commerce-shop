@@ -164,7 +164,7 @@ const Navbar = () => {
 
             {isAdmin && (
               <Link
-                to="/dashboard"
+                to={"/dashboard"}
                 className="relative overflow-hidden px-4 py-2 rounded-md group"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-800 to-emerald-900 opacity-50 group-hover:opacity-70 transition-opacity duration-300 rounded-md"></span>

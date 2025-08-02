@@ -26,14 +26,14 @@ export const getFeaturedProducts = async (req, res) => {
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
-    res.status(200).json(products);
+    res.status(200).json({ products });
   } catch (error) {
     res.status(500).json({ message: "Error fetching products" });
   }
 };
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, image, isFeatured } = req.body;
+    const { name, description, price, image, category } = req.body;
     let cloudinaryResponse = null;
     if (image) {
       cloudinaryResponse = await cloudinary.uploader.upload(image, {
@@ -44,7 +44,7 @@ export const createProduct = async (req, res) => {
       name,
       description,
       price,
-      image: cloudinaryResponse?.secure_url
+      imageUrl: cloudinaryResponse?.secure_url
         ? cloudinaryResponse.secure_url
         : "",
       category,
