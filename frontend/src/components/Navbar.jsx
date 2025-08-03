@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Lock, LogIn, LogOut, ShoppingCart, UserPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useCartStore } from "../stores/useCartStore.js";
 import useUserStore from "../stores/useUserStore.js";
 
 const LogoutConfirmation = ({ isOpen, onClose, onConfirm }) => {
@@ -87,7 +88,7 @@ const LogoutConfirmation = ({ isOpen, onClose, onConfirm }) => {
 const Navbar = () => {
   const { user, logout } = useUserStore(); // Replace with actual user authentication logic
   const isAdmin = user?.role === "admin";
-  const cart = []; // Define cart or replace with your actual cart state
+  const { cart } = useCartStore();
   const [scrolled, setScrolled] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -154,9 +155,11 @@ const Navbar = () => {
                     size={22}
                   />
 
-                  <span className="absolute -top-2 -left-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(16,185,129,0.5)]">
-                    3
-                  </span>
+                  {cart.length > 0 && (
+                    <span className="absolute -top-2 -left-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                      {cart.length}
+                    </span>
+                  )}
                   <span className="hidden sm:inline ml-2">Cart</span>
                 </div>
               </Link>
