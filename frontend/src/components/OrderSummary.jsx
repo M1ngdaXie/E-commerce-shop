@@ -1,22 +1,53 @@
+import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 import { MoveRight } from "lucide-react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import axios from "../lib/axios"; // Make sure this imports your custom instance
 import useCartStore from "../stores/useCartStore.js";
 
 const OrderSummary = () => {
+  const stripePromise = loadStripe(
+    "pk_test_51RodkmIAqV6MJS4o3RFhsfsC2muN9YuEWxP1LpI3lPLwYATTBTcmemHCsHscoA1RR3vc6Z93b6vLpKXyCcI6XCx800Qk2bAwBo"
+  );
   const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
   const savings = subtotal - total;
   const formattedSubtotal = subtotal.toFixed(2);
   const formattedSavings = savings.toFixed(2);
   const formattedTotal = total.toFixed(2);
 
-  const handlePayment = () => {
-    // Implement payment logic here
-    alert("Proceeding to checkout...");
+  const handlePayment = async () => {
+    try {
+      // Log for debugging
+      console.log("Starting checkout process...");
+      console.log("Cart items:", cart);
+      console.log("Applied coupon:", coupon);
+      // IMPORTANT: Notice the URL doesn't include /api because it's in baseURL
+      const response = await axios.post("/payment/create-checkout-session", {
+        products: cart,
+        couponCode: coupon ? coupon.code : null, // Make sure this matches backend parameter name
+      });
+
+      console.log("Checkout session created:", response.data);
+
+      // Load Stripe and redirect
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: response.data.id,
+      });
+
+      if (error) {
+        console.error("Stripe redirect error:", error);
+        toast.error("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      toast.error("Unable to process your payment. Please try again later.");
+    }
   };
 
   if (cart.length === 0) {
-    return null; // Don't render if cart is empty
+    return null;
   }
 
   return (
@@ -26,9 +57,11 @@ const OrderSummary = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Rest of your component remains the same */}
       <p className="text-xl font-semibold text-emerald-400">Order summary</p>
 
       <div className="space-y-4">
+        {/* Price details */}
         <div className="space-y-2">
           <dl className="flex items-center justify-between gap-4">
             <dt className="text-base font-normal text-gray-300">
@@ -89,4 +122,5 @@ const OrderSummary = () => {
     </motion.div>
   );
 };
+
 export default OrderSummary;

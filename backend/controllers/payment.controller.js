@@ -9,6 +9,13 @@ export const createCheckoutSession = async (req, res) => {
       return res.status(400).json({ message: "Products array is required" });
     }
 
+    // Add this to ensure proper URL format
+    const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    // Check if baseUrl has a scheme, add if missing
+    const formattedBaseUrl = baseUrl.startsWith("http")
+      ? baseUrl
+      : `http://${baseUrl}`;
+
     let totalAmount = 0;
     const lineItems = products.map((product) => {
       const amount = Math.round(product.price * 100);
@@ -18,7 +25,7 @@ export const createCheckoutSession = async (req, res) => {
           currency: "usd",
           product_data: {
             name: product.name,
-            images: [product.image],
+            images: [product.imageUrl],
           },
           unit_amount: amount,
         },
@@ -50,8 +57,9 @@ export const createCheckoutSession = async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/cancel`,
+      // Use the formatted URL with scheme
+      success_url: `${formattedBaseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${formattedBaseUrl}/cancel`,
       discounts: coupon
         ? [
             {
@@ -61,7 +69,7 @@ export const createCheckoutSession = async (req, res) => {
         : [],
       metadata: {
         userId: req.user._id.toString(),
-        couponCode: appliedCouponCode, // Safe fallback handling
+        couponCode: appliedCouponCode,
         products: JSON.stringify(
           products.map((p) => ({
             id: p._id,

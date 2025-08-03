@@ -37,3 +37,15 @@ app.listen(process.env.PORT || 5050, () => {
   console.log(`Server is running on port ${process.env.PORT || 5050}`);
   connectDB();
 });
+// Add this after dotenv.config()
+console.log("Environment check:");
+console.log("- NODE_ENV:", process.env.NODE_ENV);
+console.log("- CLIENT_URL:", process.env.CLIENT_URL);
+console.log(
+  "- STRIPE_SECRET_KEY:",
+  process.env.STRIPE_SECRET_KEY
+    ? "Set (starts with " +
+        process.env.STRIPE_SECRET_KEY.substring(0, 7) +
+        "...)"
+    : "Not set"
+);
