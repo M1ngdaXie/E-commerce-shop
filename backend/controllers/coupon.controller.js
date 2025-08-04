@@ -3,8 +3,9 @@ import Coupon from "../models/coupon.model.js";
 export const getCoupon = async (req, res) => {
   try {
     const user = req.user;
+    console.log("Request user:", req.user);
     const coupons = await Coupon.findOne({ userId: user._id, isActive: true });
-    res.status(200).json(coupons);
+    res.status(200).json(coupons || null);
   } catch (error) {
     res.status(500).json({ message: "Error fetching coupons", error });
   }

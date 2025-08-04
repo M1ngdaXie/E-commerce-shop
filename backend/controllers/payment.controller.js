@@ -112,26 +112,52 @@ async function createStripeCoupon(discountPercentage) {
 }
 
 async function createNewCoupon(userId) {
-  const newCoupon = new Coupon({
-    code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-    discountPercentage: 10,
-    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    userId: userId,
-  });
-  await newCoupon.save();
-  return newCoupon;
+  await Coupon.findOneAndDelete({ userId });
+  const code =
+    "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase();
+  try {
+    const newCoupon = new Coupon({
+      code,
+      discountPercentage: 10,
+      expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      userId,
+    });
+    await newCoupon.save();
+    console.log("Created new coupon:", newCoupon);
+    return newCoupon;
+  } catch (err) {
+    console.error("Error creating new coupon:", err);
+    return null;
+  }
 }
 
 export const checkSuccess = async (req, res) => {
   try {
-    const { session_id } = req.body;
-    if (!session_id) {
+    // Change parameter name to match friend's code
+    const { sessionId } = req.body;
+    if (!sessionId) {
       return res.status(400).json({ message: "Session ID is required" });
     }
 
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    // Check if an order with this sessionId already exists
+    const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+    if (existingOrder) {
+      console.log(
+        "Duplicate request detected: Order already exists for this sessionId:",
+        sessionId
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Order already exists",
+        orderId: existingOrder._id,
+      });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
     if (session.payment_status === "paid") {
-      if (session.metadata.couponCode) {
+      // Handle coupon if used
+      if (session.metadata && session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
             code: session.metadata.couponCode,
@@ -140,30 +166,42 @@ export const checkSuccess = async (req, res) => {
           { isActive: false }
         );
       }
-      const products = JSON.parse(session.metadata.products || "[]");
+
+      // Parse products and create order
+      const products = JSON.parse(session.metadata?.products || "[]");
       const newOrder = new Order({
-        userId: session.metadata.userId,
+        user: session.metadata.userId,
         products: products.map((product) => ({
-          productId: product.id,
+          product: product.id,
           quantity: product.quantity,
           price: product.price,
         })),
         totalAmount: session.amount_total / 100,
-        paymentIntent: session.payment_intent,
-        stripeSessionId: session_id,
+        stripeSessionId: sessionId,
       });
+
       await newOrder.save();
+
+      // Clear the user's cart in the database (THIS IS THE KEY ADDITION)
+      await Cart.deleteMany({ userId: session.metadata.userId });
+
+      console.log("Order saved successfully:", newOrder._id);
       return res.status(200).json({
         success: true,
         message: "Payment successful and order created",
         orderId: newOrder._id,
-        session,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not completed",
       });
     }
-
-    res.status(404).json({ message: "Session not found or not paid" });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving session", error });
-    console.error("Error retrieving session:", error);
+    console.error("Error processing checkout success:", error);
+    res.status(500).json({
+      message: "Error processing checkout success",
+      error: error.message,
+    });
   }
 };

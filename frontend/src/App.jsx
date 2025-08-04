@@ -8,6 +8,8 @@ import CartPage from "./pages/CartPage.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
+import PurchaseSuccessPage from "./pages/PurchaseSuccessPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import useCartStore from "./stores/useCartStore.js";
 import useUserStore from "./stores/useUserStore.js";
@@ -63,6 +65,16 @@ function App() {
             key="cart"
             path="/cart"
             element={user ? <CartPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            key="success"
+            path="/success"
+            element={user ? <PurchaseSuccessPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            key="cancel"
+            path="/cancel"
+            element={user ? <PurchaseCancelPage /> : <Navigate to="/login" />}
           />
         </Routes>
       </div>

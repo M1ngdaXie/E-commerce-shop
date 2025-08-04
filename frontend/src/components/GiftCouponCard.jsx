@@ -1,16 +1,25 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useCartStore from "../stores/useCartStore.js";
 
 const GiftCouponCard = () => {
   const [userInputCode, setUserInputCode] = useState("");
-  const { applyCoupon } = useCartStore();
-  const { coupon, isCouponApplied, removeCoupon } = useCartStore();
+  const { coupon, isCouponApplied, removeCoupon, getMyCoupon, applyCoupon } =
+    useCartStore();
 
-  const handleRemoveCoupon = () => {
-    removeCoupon();
-    toast.success("Coupon removed.");
+  useEffect(() => {
+    getMyCoupon();
+  }, [getMyCoupon]);
+
+  useEffect(() => {
+    if (coupon) {
+      setUserInputCode(coupon.code);
+    }
+  }, [coupon]);
+  const handleRemoveCoupon = async () => {
+    await removeCoupon();
+    setUserInputCode("");
   };
   const handleApplyCoupon = () => {
     if (!userInputCode.trim()) {
