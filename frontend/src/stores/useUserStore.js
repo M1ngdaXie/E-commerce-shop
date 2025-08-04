@@ -1,4 +1,4 @@
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { create } from "zustand";
 import axios from "../lib/axios";
 
@@ -57,6 +57,18 @@ const useUserStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+
+  refreshToken: async () => {
+    try {
+      await axios.post("/auth/refresh-token");
+      // Optionally, you may want to update user data here
+    } catch (error) {
+      set({ user: null });
+      toast.error("Session expired, please log in again.");
+      throw error;
+    }
+  },
+
   checkAuth: async () => {
     set({ checkingAuth: true });
     try {
@@ -69,4 +81,32 @@ const useUserStore = create((set, get) => ({
     }
   },
 }));
+
+let refreshPromise = null;
+
+// Axios interceptor to handle 401 errors and refresh token
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        if (refreshPromise) {
+          await refreshPromise;
+        } else {
+          refreshPromise = useUserStore.getState().refreshToken();
+          await refreshPromise;
+          refreshPromise = null;
+        }
+        return axios(originalRequest);
+      } catch (err) {
+        useUserStore.getState().logout();
+        return Promise.reject(err);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default useUserStore;

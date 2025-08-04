@@ -2,9 +2,15 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import CategoryItem from "../components/CategoryItem.jsx";
+import FeaturedProducts from "../components/FeaturedProducts.jsx";
+import useProductStore from "../stores/useProductStore.js";
 
 const HomePage = () => {
   const [scrollY, setScrollY] = useState(0);
+  const { fetchFeaturedProducts, products, isLoading } = useProductStore();
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, [fetchFeaturedProducts]);
 
   // Parallax effect
   useEffect(() => {
@@ -204,6 +210,9 @@ const HomePage = () => {
               />
             ))}
           </div>
+          {!isLoading && products.length > 0 && (
+            <FeaturedProducts featuredProducts={products} />
+          )}
 
           <div className="mt-16 flex justify-center md:hidden">
             <a
