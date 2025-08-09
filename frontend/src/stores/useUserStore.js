@@ -59,12 +59,16 @@ const useUserStore = create((set, get) => ({
   },
 
   refreshToken: async () => {
+    // Prevent multiple simultaneous refresh attempts
+    if (get().checkingAuth) return;
+
+    set({ checkingAuth: true });
     try {
-      await axios.post("/auth/refresh-token");
-      // Optionally, you may want to update user data here
+      const response = await axios.post("/auth/refresh-token");
+      set({ checkingAuth: false });
+      return response.data;
     } catch (error) {
-      set({ user: null });
-      toast.error("Session expired, please log in again.");
+      set({ user: null, checkingAuth: false });
       throw error;
     }
   },
