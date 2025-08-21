@@ -1,8 +1,10 @@
 import axios from "axios";
 
+// Detect environment based on URL rather than env variables
+const isDevelopment = window.location.hostname === "localhost";
+
 const axiosInstance = axios.create({
-  baseURL:
-    import.meta.mode === "development" ? "http://localhost:5050/api" : "/api",
+  baseURL: isDevelopment ? "http://localhost:5050/api" : "/api",
   withCredentials: true,
 });
 
