@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import connectDB from "./lib/db.js";
-import redisClient from "./lib/redis.js";
 import analyticsRoutes from "./routes/analytics.route.js";
 import authRoutes from "./routes/auth.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
@@ -30,32 +29,27 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
   });
 }
-// Test Redis connection on startup
-async function testRedis() {
-  try {
-    await redisClient.set("test-key", "test-value");
-    const value = await redisClient.get("test-key");
-    console.log(`Redis test: ${value}`);
-  } catch (error) {
-    console.error("Redis test failed:", error);
-  }
-}
 
-testRedis();
 app.listen(process.env.PORT || 5050, () => {
   console.log(`Server is running on port ${process.env.PORT || 5050}`);
   connectDB();
 });
 
+// # Add this to your server.js temporarily
+console.log(
+  "REDIS_URL:",
+  process.env.REDIS_URL ? "Set (masked for security)" : "Not set"
+);
+
 // Add this after dotenv.config()
-// console.log("Environment check:");
-// console.log("- NODE_ENV:", process.env.NODE_ENV);
-// console.log("- CLIENT_URL:", process.env.CLIENT_URL);
-// console.log(
-//   "- STRIPE_SECRET_KEY:",
-//   process.env.STRIPE_SECRET_KEY
-//     ? "Set (starts with " +
-//         process.env.STRIPE_SECRET_KEY.substring(0, 7) +
-//         "...)"
-//     : "Not set"
-// );
+console.log("Environment check:");
+console.log("- NODE_ENV:", process.env.NODE_ENV);
+console.log("- CLIENT_URL:", process.env.CLIENT_URL);
+console.log(
+  "- STRIPE_SECRET_KEY:",
+  process.env.STRIPE_SECRET_KEY
+    ? "Set (starts with " +
+        process.env.STRIPE_SECRET_KEY.substring(0, 7) +
+        "...)"
+    : "Not set"
+);

@@ -17,14 +17,9 @@ try {
   // Use direct Upstash URL as fallback if environment variable isn't available
   const redisUrl =
     process.env.REDIS_URL ||
-    "rediss://default:AeU6AAIjcDEyNGJhYjRiYTg0ZjE0MmE1YTg1ZjFmNTJkOGU2MWYyNHAxMA@finer-calf-58682.upstash.io:6379";
+    "redis://default:AeBFAAIncDE0YTJlMzA3MDM0Yzk0YmNmOGRmNmEwOTYwNWQwMzE0MnAxNTc0MTM@civil-macaw-57413.upstash.io:6379";
 
   redisClient = new Redis(redisUrl);
-
-  // Add event handlers to track connection status
-  redisClient.on("connect", () => {
-    console.log("Redis client connected successfully");
-  });
 
   redisClient.on("error", (err) => {
     console.error("Redis error:", err);
