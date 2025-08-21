@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
-import Homepage from "./pages/Homepage.jsx";
+import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage.jsx";
@@ -38,7 +38,7 @@ function App() {
       <div className="relative z-50 pt-20">
         <Navbar />
         <Routes>
-          <Route key="home" path="/" element={<Homepage />} />
+          <Route key="home" path="/" element={<HomePage />} />
           <Route
             key="signup"
             path="/signup"
