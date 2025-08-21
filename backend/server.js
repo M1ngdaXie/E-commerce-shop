@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import express from "express";
+import path from "path";
 import connectDB from "./lib/db.js";
 import redisClient from "./lib/redis.js";
 import analyticsRoutes from "./routes/analytics.route.js";
@@ -12,7 +13,7 @@ import productRoutes from "./routes/product.routes.js";
 
 const app = express();
 dotenv.config();
-
+const __dirname = path.resolve();
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
@@ -21,6 +22,14 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 // Test Redis connection on startup
 async function testRedis() {
   try {
@@ -37,15 +46,16 @@ app.listen(process.env.PORT || 5050, () => {
   console.log(`Server is running on port ${process.env.PORT || 5050}`);
   connectDB();
 });
+
 // Add this after dotenv.config()
-console.log("Environment check:");
-console.log("- NODE_ENV:", process.env.NODE_ENV);
-console.log("- CLIENT_URL:", process.env.CLIENT_URL);
-console.log(
-  "- STRIPE_SECRET_KEY:",
-  process.env.STRIPE_SECRET_KEY
-    ? "Set (starts with " +
-        process.env.STRIPE_SECRET_KEY.substring(0, 7) +
-        "...)"
-    : "Not set"
-);
+// console.log("Environment check:");
+// console.log("- NODE_ENV:", process.env.NODE_ENV);
+// console.log("- CLIENT_URL:", process.env.CLIENT_URL);
+// console.log(
+//   "- STRIPE_SECRET_KEY:",
+//   process.env.STRIPE_SECRET_KEY
+//     ? "Set (starts with " +
+//         process.env.STRIPE_SECRET_KEY.substring(0, 7) +
+//         "...)"
+//     : "Not set"
+// );
