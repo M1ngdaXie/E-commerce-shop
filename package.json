@@ -9,7 +9,7 @@
     "start": "node backend/server.js",
     "frontend": "cd frontend && npm run dev",
     "dev:frontend": "cd frontend/e-commerce-shop && npm run dev",
-    "build": "npm install && npm --prefix frontend install && npm run build --prefix frontend && npm --prefix backend install",
+    "build": "npm install && npm --prefix frontend install && npm run build --prefix frontend",
     "dev:backend": "nodemon backend/server.js"
   },
   "keywords": [],
